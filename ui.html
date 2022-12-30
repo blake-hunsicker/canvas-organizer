@@ -5,7 +5,12 @@
 <button id="cancel">Cancel</button>
 <button id="update">Update Canvas</button>
 
+<script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/sortable.js"></script>
 <script>
+
+  const sortable = new Sortable.default(document.querySelectorAll('.map'), {
+    draggable: '.node-thumbnail'
+  });
 
   // Function to clear all child nodes
   function removeAllChildNodes(parent) {
@@ -31,25 +36,26 @@
 
       for (i = 0; i <= selectedNodes.length - 1; i++) {
         console.log(selectedNodes[i])
-
-        const nodeThumbnail = document.createElement('div')
-        nodeThumbnail.className = 'node-thumbnail'
-        // nodeThumbnail.style.backgroundColor = 'red'
-
+        
+        // Creating the layer name
         const nodeName = document.createElement('div')
         nodeName.className = 'node-name'
         nodeName.innerText = selectedNodes[i].name
 
+        // Creating the layer image
         const nodeImg = document.createElement('div')
         nodeImg.className = 'node-img'
         nodeImg.style.backgroundColor = 'blue' 
-        nodeImg.style.height = selectedNodes[i].height / 4 // + '100px'
-        nodeImg.style.width = selectedNodes[i].width / 4 // + '100px'
+        nodeImg.style.height = selectedNodes[i].height / 4
+        nodeImg.style.width = selectedNodes[i].width / 4
 
+        // Creating the thumbnail wrapper + append all above elements to it
+        const nodeThumbnail = document.createElement('div')
+        nodeThumbnail.className = 'node-thumbnail'
         nodeThumbnail.appendChild(nodeImg)
         nodeThumbnail.appendChild(nodeName)
-        // nodeThumbnail.innerText = selectedNodes[i].name
-
+        
+        // Append thumbnail wrapper to DOM
         mapContainer.appendChild(nodeThumbnail)
       }
 
