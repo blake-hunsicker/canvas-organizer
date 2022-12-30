@@ -5,13 +5,12 @@
 <button id="cancel">Cancel</button>
 <button id="update">Update Canvas</button>
 
-
 <script>
 
   // Function to clear all child nodes
   function removeAllChildNodes(parent) {
     while (parent.firstChild) {
-      parent.removeChild(parent.firstChild);
+      parent.removeChild(parent.firstChild)
     }
   }
 
@@ -25,7 +24,7 @@
       let mapContainer = document.querySelector('.map')
 
       // Clear previous selections
-      removeAllChildNodes(mapContainer);
+      removeAllChildNodes(mapContainer)
 
       // Cycle through nodes and add them to the DOM
       let i
@@ -34,7 +33,23 @@
         console.log(selectedNodes[i])
 
         const nodeThumbnail = document.createElement('div')
-        nodeThumbnail.innerText = selectedNodes[i].name
+        nodeThumbnail.className = 'node-thumbnail'
+        // nodeThumbnail.style.backgroundColor = 'red'
+
+        const nodeName = document.createElement('div')
+        nodeName.className = 'node-name'
+        nodeName.innerText = selectedNodes[i].name
+
+        const nodeImg = document.createElement('div')
+        nodeImg.className = 'node-img'
+        nodeImg.style.backgroundColor = 'blue' 
+        nodeImg.style.height = selectedNodes[i].height / 4 // + '100px'
+        nodeImg.style.width = selectedNodes[i].width / 4 // + '100px'
+
+        nodeThumbnail.appendChild(nodeImg)
+        nodeThumbnail.appendChild(nodeName)
+        // nodeThumbnail.innerText = selectedNodes[i].name
+
         mapContainer.appendChild(nodeThumbnail)
       }
 
@@ -47,6 +62,7 @@
 <!-- CSS -->
 <style>
   body {
+    color: var(--figma-color-text);
     background-color: var(--figma-color-bg-secondary);
   }
 </style>
