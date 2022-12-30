@@ -1,3 +1,11 @@
+<script src="https://unpkg.com/phosphor-icons"></script>
+
+<!-- Canvas controls -->
+<div class="canvas-controls">
+  <button class="direction-control horizontal active"><i class="ph-arrow-right"></i></button>
+  <button class="direction-control vertical"><i class="ph-arrow-down"></i></button>
+</div>
+
 <!-- Map nodes -->
 <div class="map"></div>
 
@@ -8,6 +16,29 @@
 <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/sortable.js"></script>
 <script>
 
+  // Function to toggle flex direction
+  document.querySelectorAll('.direction-control').forEach(div =>
+    div.onclick = () => {
+      if (div.classList.contains('active')) {
+        return
+      } else {
+        // Toggle direction in 2 steps:
+
+        // Toggle active classes
+        document.querySelector('.direction-control.active').classList.remove('active')
+        div.classList.add('active')
+
+        // Toggle flex direction in .map
+        if (document.querySelector('.direction-control.active').classList.contains('horizontal')) {
+          document.querySelector('.map').style.flexDirection = 'row'
+        } else {
+          document.querySelector('.map').style.flexDirection = 'column'
+        }
+      }
+    }
+  )
+
+  // Initiate Draggable library
   const sortable = new Sortable.default(document.querySelectorAll('.map'), {
     draggable: '.node-thumbnail'
   });
@@ -70,5 +101,12 @@
   body {
     color: var(--figma-color-text);
     background-color: var(--figma-color-bg-secondary);
+  }
+  .map {
+    display: flex;
+    flex-direction: row;
+  }
+  .direction-control.active {
+    background-color: blue;
   }
 </style>
