@@ -1,4 +1,5 @@
-
+<!-- Map nodes -->
+<div class="map"></div>
 
 <!-- Update and cancel buttons -->
 <button id="cancel">Cancel</button>
@@ -7,12 +8,36 @@
 
 <script>
 
+  // Function to clear all child nodes
+  function removeAllChildNodes(parent) {
+    while (parent.firstChild) {
+      parent.removeChild(parent.firstChild);
+    }
+  }
+
   onmessage = (event) => {
 
     let message = event.data.pluginMessage
 
     if (message.selection) {
-      console.log(message)
+
+      let selectedNodes = message.selection
+      let mapContainer = document.querySelector('.map')
+
+      // Clear previous selections
+      removeAllChildNodes(mapContainer);
+
+      // Cycle through nodes and add them to the DOM
+      let i
+
+      for (i = 0; i <= selectedNodes.length - 1; i++) {
+        console.log(selectedNodes[i])
+
+        const nodeThumbnail = document.createElement('div')
+        nodeThumbnail.innerText = selectedNodes[i]
+        mapContainer.appendChild(nodeThumbnail)
+      }
+
     }
 
   }

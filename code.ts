@@ -9,8 +9,11 @@ if (figma.editorType === 'figma') {
     let selection = []
 
     for (const node of figma.currentPage.selection) {
-      selection.push(node);
+      selection.push(node.name);
+      console.log('from code.ts, node from for statement ', node)
     }
+
+    console.log('from code.ts, selection array ', selection[0])
 
     figma.ui.postMessage({selection})
 
