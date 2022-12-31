@@ -23,9 +23,10 @@
         return
       } else {
         // Toggle direction in 2 steps:
+        let activeButton = document.querySelector('.direction-control.active')
 
         // Toggle active classes
-        document.querySelector('.direction-control.active').classList.remove('active')
+        activeButton.classList.remove('active')
         div.classList.add('active')
 
         // Toggle flex direction in .map
@@ -76,9 +77,17 @@
         // Creating the layer image
         const nodeImg = document.createElement('div')
         nodeImg.className = 'node-img'
-        nodeImg.style.backgroundColor = 'blue' 
-        nodeImg.style.height = selectedNodes[i].height / 4
-        nodeImg.style.width = selectedNodes[i].width / 4
+        if (selectedNodes[i].type == 'FRAME') {
+          nodeImg.innerHTML = '<i class="ph-hash-straight"></i>'
+        } else if (selectedNodes[i].type == 'COMPONENT' || selectedNodes[i].type == 'COMPONENT_SET') {
+          nodeImg.innerHTML = '<i class="ph-diamonds-four-fill"></i>'
+        } else if (selectedNodes[i].type == 'INSTANCE') {
+          nodeImg.innerHTML = '<i class="ph-diamond"></i>'
+        } else if (selectedNodes[i].type == 'TEXT') {
+          nodeImg.innerHTML = '<i class="ph-text-t-fill"></i>'
+        }
+        nodeImg.style.height = '120px' // selectedNodes[i].height / 4
+        nodeImg.style.width = '120px' // selectedNodes[i].width / 4
 
         // Creating the thumbnail wrapper + append all above elements to it
         const nodeThumbnail = document.createElement('div')

@@ -1,5 +1,6 @@
 interface SelectedNodeData {
   id: string;
+  type: string;
   name: string;
   height: number;
   width: number;
@@ -19,8 +20,10 @@ if (figma.editorType === 'figma') {
     
 
     for (const node of figma.currentPage.selection) {
+      console.log('from code.ts we have ', node)
       let selectedNode: SelectedNodeData = {
         id: node.id,
+        type: node.type,
         name: node.name,
         height: node.height,
         width: node.width,
@@ -29,7 +32,6 @@ if (figma.editorType === 'figma') {
       }
 
       selection.push(selectedNode);
-      console.log('from code.ts, selectedNode from for statement ', selectedNode)
     }
 
     // console.log('from code.ts, selection array ', selection[0])
