@@ -1,5 +1,3 @@
-<script src="https://unpkg.com/phosphor-icons"></script>
-
 <!-- Canvas controls -->
 <div class="canvas-controls">
   <button class="direction-control horizontal active"><i class="ph-arrow-right"></i></button>
@@ -7,13 +5,14 @@
 </div>
 
 <!-- Map nodes -->
-<div class="map"></div>
+<div class="map" id="map"></div>
 
 <!-- Update and cancel buttons -->
 <button id="cancel">Cancel</button>
 <button id="update">Update Canvas</button>
 
-<script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/sortable.js"></script>
+<script src="https://unpkg.com/phosphor-icons"></script>
+<script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
 <script>
 
   // Function to toggle flex direction
@@ -39,10 +38,13 @@
     }
   )
 
-  // Initiate Draggable library
-  const sortable = new Sortable.default(document.querySelectorAll('.map'), {
-    draggable: '.node-thumbnail'
-  });
+    // Initiate Sortable library
+    Sortable.create(map, {
+      swap: true,
+      swapClass: "highlight",
+      filter: '.spacer',
+      animation: 150
+    });
 
   // Function to clear all child nodes
   function removeAllChildNodes(parent) {
@@ -97,6 +99,13 @@
         
         // Append thumbnail wrapper to DOM
         mapContainer.appendChild(nodeThumbnail)
+
+        // Add spacer
+        const spacer = document.createElement('div')
+        spacer.className = 'spacer'
+        spacer.style.width = '48px'
+        spacer.innerHTML = '<div class="line"><div class="measure">48px</div></div>'
+        mapContainer.appendChild(spacer)
       }
 
     }
@@ -117,5 +126,14 @@
   }
   .direction-control.active {
     background-color: blue;
+  }
+  .spacer {
+    position: relative;
+  }
+  .line {
+    position: absolute;
+    top: 50%;
+    background: red;
+    height: 1px;
   }
 </style>

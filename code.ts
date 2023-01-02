@@ -10,7 +10,7 @@ interface SelectedNodeData {
 
 if (figma.editorType === 'figma') {
   
-  figma.showUI(__html__, { themeColors: true, width: 480, height: 270 });
+  figma.showUI(__html__, { themeColors: true, width: 960, height: 540 });
 
   // Send my current selection to the UI
 
