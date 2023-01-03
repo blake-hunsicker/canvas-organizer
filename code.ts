@@ -18,7 +18,6 @@ if (figma.editorType === 'figma') {
 
     let selection = []
     
-
     for (const node of figma.currentPage.selection) {
       console.log('from code.ts we have ', node)
       let selectedNode: SelectedNodeData = {
@@ -33,12 +32,46 @@ if (figma.editorType === 'figma') {
 
       selection.push(selectedNode);
     }
-
-    // console.log('from code.ts, selection array ', selection[0])
-
+    
     figma.ui.postMessage({selection})
 
   })
+
+  // Receive message from plugin
+  figma.ui.onmessage = msg => {
+  
+    console.log('message received: ', msg)
+    
+    let i
+    for (i = 0; i <= msg.length - 1; i++) {
+      const node = msg[i]
+      const nodeID = msg[i].nodeID
+      const nodeToMove = figma.getNodeById(nodeID)!
+      console.log('node to move: ', nodeToMove)
+      if (nodeToMove.type === 'DOCUMENT' || nodeToMove.type === 'PAGE') { return }
+
+      // Set all nodes' Y coordinates (for v1, they are all the same)
+      nodeToMove.y = 0
+
+      // Set every node's X coordinate, depending on order
+      if (i === 0) {
+        // If it's the first node, set its X to 0 or whatever the user chooses
+        nodeToMove.x = 0
+      } else {
+        // If its not the first node, then treat it normally
+        const prevNumber = i - 1
+        const prevNodeCount = msg[prevNumber]
+        const prevNodeID = msg[prevNumber].nodeID
+        const prevNode = figma.getNodeById(prevNodeID)!
+
+        if (prevNode.type === 'DOCUMENT' || prevNode.type === 'PAGE') { return }
+
+        nodeToMove.x = prevNode.x + prevNode.width + msg[i-1].space
+
+      }
+    }
+
+  }
 
   // figma.closePlugin();
 

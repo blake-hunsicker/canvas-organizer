@@ -1,5 +1,7 @@
 <!-- Canvas controls -->
 <div class="canvas-controls">
+  <!-- <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike"> -->
+  <!-- <label for="vehicle1"> I have a bike</label><br> -->
   <button class="direction-control horizontal active"><i class="ph-arrow-right"></i></button>
   <button class="direction-control vertical"><i class="ph-arrow-down"></i></button>
 </div>
@@ -15,7 +17,72 @@
 <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
 <script>
 
-  // Function to toggle flex direction
+  // Receive info from the plugin
+  onmessage = (event) => {
+
+    let message = event.data.pluginMessage
+
+    if (message.selection) {
+
+      let selectedNodes = message.selection
+      let mapContainer = document.querySelector('.map')
+
+      // Clear previous selections
+      removeAllChildNodes(mapContainer)
+
+      // Cycle through nodes and add them to the DOM
+      let i
+
+      for (i = 0; i <= selectedNodes.length - 1; i++) {
+        console.log(selectedNodes[i])
+        
+        // Creating the layer name
+        const nodeName = document.createElement('div')
+        nodeName.className = 'node-name'
+        nodeName.innerText = selectedNodes[i].name
+
+        // Creating the layer image
+        const nodeImg = document.createElement('div')
+        nodeImg.className = 'node-img'
+        if (selectedNodes[i].type == 'FRAME') {
+          nodeImg.innerHTML = '<i class="ph-hash-straight"></i>'
+        } else if (selectedNodes[i].type == 'COMPONENT' || selectedNodes[i].type == 'COMPONENT_SET') {
+          nodeImg.innerHTML = '<i class="ph-diamonds-four-fill"></i>'
+        } else if (selectedNodes[i].type == 'INSTANCE') {
+          nodeImg.innerHTML = '<i class="ph-diamond"></i>'
+        } else if (selectedNodes[i].type == 'TEXT') {
+          nodeImg.innerHTML = '<i class="ph-text-t-fill"></i>'
+        }
+
+        // Creating the thumbnail wrapper + append all above elements to it
+        const nodeThumbnail = document.createElement('div')
+        nodeThumbnail.className = 'node-thumbnail'
+        nodeThumbnail.id = selectedNodes[i].id
+        nodeThumbnail.dataset.key = i
+        nodeThumbnail.appendChild(nodeImg)
+        nodeThumbnail.appendChild(nodeName)
+        
+        // Append thumbnail wrapper to DOM
+        mapContainer.appendChild(nodeThumbnail)
+
+        // Add spacer until penultimate iteration
+        if (i != selectedNodes.length - 1) {
+          const spacer = document.createElement('div')
+          spacer.className = 'spacer'
+          spacer.dataset.key = i
+          spacer.innerHTML = `<div class="line"><input class="measure" id="input${i}" type="text" name="input${i}" value="48" onClick="focusField(${i})"></div>`
+          mapContainer.appendChild(spacer)
+          console.log(mapContainer)
+        }
+        
+      }
+
+      console.log(document.querySelector('.map').childElementCount)
+    }
+
+  }
+
+    // Function to toggle flex direction
   document.querySelectorAll('.direction-control').forEach(div =>
     div.onclick = () => {
       if (div.classList.contains('active')) {
@@ -53,63 +120,43 @@
     }
   }
 
-  onmessage = (event) => {
+  // Force focus on text fields on click
+  function focusField(iteration) {
+    document.querySelector(`#input${iteration}`).focus()
+  }
 
-    let message = event.data.pluginMessage
+  // Send user selections and controls to the plugin
+  function sendControls() {
 
-    if (message.selection) {
+    const nodes = document.querySelectorAll('.node-thumbnail')
+    const spacerMeasures = document.querySelectorAll('.measure')
+    let nodesAndSpaces = []
 
-      let selectedNodes = message.selection
-      let mapContainer = document.querySelector('.map')
+    const nodesAndSpacesCount = document.querySelectorAll('.node-thumbnail').length
 
-      // Clear previous selections
-      removeAllChildNodes(mapContainer)
-
-      // Cycle through nodes and add them to the DOM
-      let i
-
-      for (i = 0; i <= selectedNodes.length - 1; i++) {
-        console.log(selectedNodes[i])
-        
-        // Creating the layer name
-        const nodeName = document.createElement('div')
-        nodeName.className = 'node-name'
-        nodeName.innerText = selectedNodes[i].name
-
-        // Creating the layer image
-        const nodeImg = document.createElement('div')
-        nodeImg.className = 'node-img'
-        if (selectedNodes[i].type == 'FRAME') {
-          nodeImg.innerHTML = '<i class="ph-hash-straight"></i>'
-        } else if (selectedNodes[i].type == 'COMPONENT' || selectedNodes[i].type == 'COMPONENT_SET') {
-          nodeImg.innerHTML = '<i class="ph-diamonds-four-fill"></i>'
-        } else if (selectedNodes[i].type == 'INSTANCE') {
-          nodeImg.innerHTML = '<i class="ph-diamond"></i>'
-        } else if (selectedNodes[i].type == 'TEXT') {
-          nodeImg.innerHTML = '<i class="ph-text-t-fill"></i>'
-        }
-        nodeImg.style.height = '120px' // selectedNodes[i].height / 4
-        nodeImg.style.width = '120px' // selectedNodes[i].width / 4
-
-        // Creating the thumbnail wrapper + append all above elements to it
-        const nodeThumbnail = document.createElement('div')
-        nodeThumbnail.className = 'node-thumbnail'
-        nodeThumbnail.appendChild(nodeImg)
-        nodeThumbnail.appendChild(nodeName)
-        
-        // Append thumbnail wrapper to DOM
-        mapContainer.appendChild(nodeThumbnail)
-
-        // Add spacer
-        const spacer = document.createElement('div')
-        spacer.className = 'spacer'
-        spacer.style.width = '48px'
-        spacer.innerHTML = '<div class="line"><div class="measure">48px</div></div>'
-        mapContainer.appendChild(spacer)
+    let i
+    for (i = 0; i <= nodesAndSpacesCount - 1; i++) {
+      if ( i == nodesAndSpacesCount - 1 ) {
+        nodesAndSpaces.push({
+          nodeID: nodes[i].id,
+          space: Number(0),
+        })
+      } else {
+        nodesAndSpaces.push({
+          nodeID: nodes[i].id,
+          space: Number(spacerMeasures[i].value),
+        })
       }
-
     }
 
+    console.log(nodesAndSpaces)
+
+    parent.postMessage({ pluginMessage: nodesAndSpaces }, '*')
+
+  }
+  
+  document.querySelector('#update').onclick = () => {
+    sendControls()
   }
 
 </script>
@@ -120,20 +167,28 @@
     color: var(--figma-color-text);
     background-color: var(--figma-color-bg-secondary);
   }
+  .direction-control.active {
+    background-color: blue;
+  }
   .map {
     display: flex;
     flex-direction: row;
   }
-  .direction-control.active {
-    background-color: blue;
+
+  /* Map nodes */
+  .node-thumbnail {
+    width: 120px;
+    height: 120px;
+    background-color: var(--figma-color-bg-tertiary);
+    border: 2px solid var(--figma-color-border);
   }
+
+  /* Spacers */
   .spacer {
-    position: relative;
+    display: flex;
+    align-items: center;
   }
-  .line {
-    position: absolute;
-    top: 50%;
-    background: red;
-    height: 1px;
+  .measure {
+    width: 48px;
   }
 </style>
