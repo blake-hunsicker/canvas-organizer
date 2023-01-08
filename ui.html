@@ -1,17 +1,29 @@
 <!-- Canvas controls -->
 <div class="canvas-controls">
-  <!-- <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike"> -->
-  <!-- <label for="vehicle1"> I have a bike</label><br> -->
-  <button class="direction-control horizontal active"><i class="ph-arrow-right"></i></button>
-  <button class="direction-control vertical"><i class="ph-arrow-down"></i></button>
+  <div class="coordinates-fields">
+    <div class="input-wrapper">
+      X <input class="coordinate" id="x-coordinate" type="text" name="x-coordinate" placeholder="0">
+    </div>
+    <div class="input-wrapper">
+      Y <input class="coordinate" id="y-coordinate" type="text" name="y-coordinate" placeholder="0">
+    </div>
+  </div>
+  <div class="order-toggle">
+    <button class="direction-control active" data-direction="row"><i class="ph-arrow-right"></i></button>
+    <button class="direction-control" data-direction="column"><i class="ph-arrow-down"></i></button>
+  </div>
 </div>
 
 <!-- Map nodes -->
-<div class="map" id="map"></div>
+<!-- <div class="map-container"> -->
+  <div class="map" id="map"></div>
+<!-- </div> -->
 
 <!-- Update and cancel buttons -->
-<button id="cancel">Cancel</button>
-<button id="update">Update Canvas</button>
+<div class="actions">
+  <button id="cancel">Cancel</button>
+  <button id="update">Update Canvas</button>
+</div>
 
 <script src="https://unpkg.com/phosphor-icons"></script>
 <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
@@ -96,7 +108,7 @@
         div.classList.add('active')
 
         // Toggle flex direction in .map
-        if (document.querySelector('.direction-control.active').classList.contains('horizontal')) {
+        if (document.querySelector('.direction-control.active').dataset.direction === 'row') {
           document.querySelector('.map').style.flexDirection = 'row'
         } else {
           document.querySelector('.map').style.flexDirection = 'column'
@@ -105,13 +117,13 @@
     }
   )
 
-    // Initiate Sortable library
-    Sortable.create(map, {
-      swap: true,
-      swapClass: "highlight",
-      filter: '.spacer',
-      animation: 150
-    });
+  // Initiate Sortable library
+  Sortable.create(map, {
+    swap: true,
+    swapClass: "highlight",
+    filter: '.spacer',
+    animation: 150
+  });
 
   // Function to clear all child nodes
   function removeAllChildNodes(parent) {
@@ -128,10 +140,25 @@
   // Send user selections and controls to the plugin
   function sendControls() {
 
-    const nodes = document.querySelectorAll('.node-thumbnail')
-    const spacerMeasures = document.querySelectorAll('.measure')
+    // Object and array variables to be filled
+    let mapBlueprint = {}
+    let mapConfig = {}
     let nodesAndSpaces = []
 
+    // 1️⃣  Getting user-chosen config first and adding it to the mapConfig object
+    const xCoordinate = document.querySelector('#x-coordinate').value
+    const yCoordinate = document.querySelector('#y-coordinate').value
+    const flowDirection = document.querySelector('.direction-control.active').dataset.direction
+
+    mapConfig.xCoordinate = Number(xCoordinate)
+    mapConfig.yCoordinate = Number(yCoordinate)
+    mapConfig.flowDirection = flowDirection
+
+    mapBlueprint.mapConfig = mapConfig // Adding the filled mapConfig object to the overall mapBlueprint object we'll send to the plugin
+
+    // 2️⃣ Getting the nodes and spaces next and adding them to the nodesAndSpaces object
+    const nodes = document.querySelectorAll('.node-thumbnail')
+    const spacerMeasures = document.querySelectorAll('.measure')
     const nodesAndSpacesCount = document.querySelectorAll('.node-thumbnail').length
 
     let i
@@ -149,9 +176,11 @@
       }
     }
 
-    console.log(nodesAndSpaces)
+    mapBlueprint.nodesAndSpaces = nodesAndSpaces // Adding the filled nodesAndSpaces array to the overall mapBlueprint object we'll send to the plugin
 
-    parent.postMessage({ pluginMessage: nodesAndSpaces }, '*')
+    // 3️⃣ Sending the filled mapBlueprint object to the plugin
+    console.log('myBluePrint at the end: ', mapBlueprint)
+    parent.postMessage({ pluginMessage: mapBlueprint }, '*') // TODO NEXT: actually change the variable sent here and work on it in code.ts
 
   }
   
@@ -167,14 +196,34 @@
     color: var(--figma-color-text);
     background-color: var(--figma-color-bg-secondary);
   }
+  body::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Canvas controls */
+  .canvas-controls {
+    display: flex;
+  }
+  .coordinates-fields {
+    display: flex;
+  }
+  .coordinates-fields input {
+    max-width: 40px;
+  }
   .direction-control.active {
     background-color: blue;
+  }
+
+  /* Map */
+  .map-container {
+    min-width: 960px;
+    min-height: 540px;
+    padding: 24px;
   }
   .map {
     display: flex;
     flex-direction: row;
   }
-
   /* Map nodes */
   .node-thumbnail {
     width: 120px;
@@ -182,7 +231,6 @@
     background-color: var(--figma-color-bg-tertiary);
     border: 2px solid var(--figma-color-border);
   }
-
   /* Spacers */
   .spacer {
     display: flex;
@@ -190,5 +238,14 @@
   }
   .measure {
     width: 48px;
+  }
+
+  /* Actions */
+  .actions {
+    position: sticky;
+    bottom: 32px;
+    display: flex;
+    justify-content: end;
+    padding: 0 24px;
   }
 </style>

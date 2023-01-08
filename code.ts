@@ -41,32 +41,65 @@ if (figma.editorType === 'figma') {
   figma.ui.onmessage = msg => {
   
     console.log('message received: ', msg)
+
+    const mapConfig = msg.mapConfig
+    const nodesAndSpaces = msg.nodesAndSpaces
     
     let i
-    for (i = 0; i <= msg.length - 1; i++) {
-      const node = msg[i]
-      const nodeID = msg[i].nodeID
+    for (i = 0; i <= nodesAndSpaces.length - 1; i++) {
+      const node = nodesAndSpaces[i]
+      const nodeID = nodesAndSpaces[i].nodeID
       const nodeToMove = figma.getNodeById(nodeID)!
       console.log('node to move: ', nodeToMove)
+      
       if (nodeToMove.type === 'DOCUMENT' || nodeToMove.type === 'PAGE') { return }
 
-      // Set all nodes' Y coordinates (for v1, they are all the same)
-      nodeToMove.y = 0
+      if (mapConfig.flowDirection === 'row') {
 
-      // Set every node's X coordinate, depending on order
-      if (i === 0) {
-        // If it's the first node, set its X to 0 or whatever the user chooses
-        nodeToMove.x = 0
+        // 🗺 If direction = row
+
+        // Set all nodes' Y coordinates (for v1, they are all the same)
+        nodeToMove.y = mapConfig.yCoordinate
+
+        // Set every node's X coordinate, depending on order
+        if (i === 0) {
+          // If it's the first node, set its X to 0 or whatever the user chooses
+          nodeToMove.x = mapConfig.xCoordinate
+        } else {
+          // If its not the first node, then treat it normally
+          const prevNumber = i - 1
+          const prevNodeCount = nodesAndSpaces[prevNumber]
+          const prevNodeID = nodesAndSpaces[prevNumber].nodeID
+          const prevNode = figma.getNodeById(prevNodeID)!
+
+          if (prevNode.type === 'DOCUMENT' || prevNode.type === 'PAGE') { return }
+
+          nodeToMove.x = prevNode.x + prevNode.width + nodesAndSpaces[i-1].space
+
+        }
       } else {
-        // If its not the first node, then treat it normally
-        const prevNumber = i - 1
-        const prevNodeCount = msg[prevNumber]
-        const prevNodeID = msg[prevNumber].nodeID
-        const prevNode = figma.getNodeById(prevNodeID)!
+        
+        // 🗺 if direction = column
 
-        if (prevNode.type === 'DOCUMENT' || prevNode.type === 'PAGE') { return }
+        // Set all nodes' X coordinates (for v1, they are all the same)
+        nodeToMove.x = mapConfig.xCoordinate
 
-        nodeToMove.x = prevNode.x + prevNode.width + msg[i-1].space
+        // Set every node's X coordinate, depending on order
+        if (i === 0) {
+          // If it's the first node, set its X to 0 or whatever the user chooses
+          nodeToMove.y = mapConfig.yCoordinate
+        } else {
+          // If its not the first node, then treat it normally
+          const prevNumber = i - 1
+          const prevNodeCount = nodesAndSpaces[prevNumber]
+          const prevNodeID = nodesAndSpaces[prevNumber].nodeID
+          const prevNode = figma.getNodeById(prevNodeID)!
+
+          if (prevNode.type === 'DOCUMENT' || prevNode.type === 'PAGE') { return }
+
+          nodeToMove.y = prevNode.y + prevNode.height + nodesAndSpaces[i-1].space
+
+        }
 
       }
     }
