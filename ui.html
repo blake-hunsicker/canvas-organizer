@@ -15,9 +15,9 @@
 </div>
 
 <!-- Map nodes -->
-<!-- <div class="map-container"> -->
+<div class="map-container">
   <div class="map" id="map"></div>
-<!-- </div> -->
+</div>
 
 <!-- Update and cancel buttons -->
 <div class="actions">
@@ -121,7 +121,7 @@
   Sortable.create(map, {
     swap: true,
     swapClass: "highlight",
-    filter: '.spacer',
+    draggable: ":not(.spacer)",
     animation: 150
   });
 
@@ -193,6 +193,7 @@
 <!-- CSS -->
 <style>
   body {
+    font-family: Inter, Arial, Helvetica, sans-serif;
     color: var(--figma-color-text);
     background-color: var(--figma-color-bg-secondary);
   }
@@ -226,8 +227,8 @@
   }
   /* Map nodes */
   .node-thumbnail {
-    width: 120px;
-    height: 120px;
+    max-width: 120px;
+    max-height: 120px;
     background-color: var(--figma-color-bg-tertiary);
     border: 2px solid var(--figma-color-border);
   }

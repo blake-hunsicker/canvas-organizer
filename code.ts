@@ -12,6 +12,28 @@ if (figma.editorType === 'figma') {
   
   figma.showUI(__html__, { themeColors: true, width: 960, height: 540 });
 
+  // Check if the user has already selected nodes
+  if (figma.currentPage.selection.length > 0) {
+    let selection = []
+    
+    for (const node of figma.currentPage.selection) {
+      console.log('from code.ts we have ', node)
+      let selectedNode: SelectedNodeData = {
+        id: node.id,
+        type: node.type,
+        name: node.name,
+        height: node.height,
+        width: node.width,
+        x: node.x,
+        y: node.y,
+      }
+
+      selection.push(selectedNode);
+    }
+    
+    figma.ui.postMessage({selection})
+  }
+
   // Send my current selection to the UI
 
   figma.on('selectionchange', () => {
