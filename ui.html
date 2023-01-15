@@ -1,29 +1,31 @@
-<!-- Canvas controls -->
-<div class="canvas-controls">
-  <div class="coordinates-fields">
-    <div class="input-wrapper">
-      X <input class="coordinate" id="x-coordinate" type="text" name="x-coordinate" placeholder="0">
-    </div>
-    <div class="input-wrapper">
-      Y <input class="coordinate" id="y-coordinate" type="text" name="y-coordinate" placeholder="0">
-    </div>
-  </div>
-  <div class="order-toggle">
-    <button class="direction-control active" data-direction="row"><i class="ph-arrow-right"></i></button>
-    <button class="direction-control" data-direction="column"><i class="ph-arrow-down"></i></button>
-  </div>
-</div>
-
 <!-- Map nodes -->
 <div class="map-container">
   <div class="map" id="map"></div>
 </div>
 
-<!-- Update and cancel buttons -->
-<div class="actions">
-  <button id="cancel">Cancel</button>
-  <button id="update">Update Canvas</button>
+<!-- Canvas controls -->
+<div class="canvas-controls">
+  <div class="coordinates-fields">
+    <div class="input-wrapper">
+      <span class="label">X</span> <input class="coordinate" id="x-coordinate" type="text" name="x-coordinate" placeholder="0">
+    </div>
+    <div class="input-wrapper">
+      <span class="label">Y</span> <input class="coordinate" id="y-coordinate" type="text" name="y-coordinate" placeholder="0">
+    </div>
+  </div>
+  <div class="order-toggle">
+    <button class="direction-control active" data-direction="row"><i class="ph-arrow-right-bold"></i></button>
+    <button class="direction-control" data-direction="column"><i class="ph-arrow-down-bold"></i></button>
+  </div>
+  <div class="divider"></div>
+  <div class="actions">
+    <button class="cancel">Cancel</button>
+    <button class="update">Update Canvas</button>
+  </div>
 </div>
+
+<!-- Update and cancel buttons -->
+
 
 <script src="https://unpkg.com/phosphor-icons"></script>
 <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
@@ -184,7 +186,7 @@
 
   }
   
-  document.querySelector('#update').onclick = () => {
+  document.querySelector('.update').onclick = () => {
     sendControls()
   }
 
@@ -197,22 +199,96 @@
     color: var(--figma-color-text);
     background-color: var(--figma-color-bg-secondary);
   }
-  body::-webkit-scrollbar {
+  /* body::-webkit-scrollbar {
     display: none;
-  }
+  } */
 
   /* Canvas controls */
   .canvas-controls {
     display: flex;
+    justify-content: center;
+    position: sticky;
+    bottom: 32px;
+    padding: 0.5rem;
+    margin: 0 auto;
+    width: fit-content;
+    background-color: var(--figma-color-bg);
+    border-radius: 1rem;
   }
+
+  /* X and Y coordinate fields */
   .coordinates-fields {
     display: flex;
   }
-  .coordinates-fields input {
+  .input-wrapper {
+    padding: 0.2rem 0.5rem;
+    background: var(--figma-color-bg-secondary);
+    margin: 0 0.4rem 0 0;
+    border-radius: 0.5rem;
+  }
+  .input-wrapper .label {
+    font-size: 0.8rem;
+  }
+  .input-wrapper input {
     max-width: 40px;
+    background: none;
+    border: none;
+    outline: none;
+  }
+  .input-wrapper input, select, textarea {
+    color: white;
+  }
+  
+  /* Flex direction toggle */
+  .order-toggle {
+    display: flex;
+    padding: 0.1rem;
+    background: var(--figma-color-bg-secondary);
+    margin: 0 0.4rem;
+    border-radius: 0.5rem;
+  }
+  button.direction-control {
+    min-height: max-content;
+    background: none;
+    border: none;
+    outline: none;
+    border-radius: 0.4rem;
+  }
+  .direction-control {
+    color: var(--figma-color-icon-tertiary);
   }
   .direction-control.active {
-    background-color: blue;
+    color: var(--figma-color-icon);
+    background: var(--figma-color-bg-tertiary);
+  }
+
+  /* Divider */
+  .divider {
+    min-width: 1px;
+    min-height: 100%;
+    background-color: var(--figma-color-border-disabled
+    );
+    margin: 0 0.4rem;
+  }
+
+  /* Actions */
+  .actions {
+    display: flex;
+  }
+  .actions button {
+    flex: 1 1 auto;
+    background: none;
+    border: none;
+    outline: none;
+  }
+  button.cancel {
+    color: var(--figma-color-text-tertiary);
+    margin: 0 0.5rem 0 0;
+  }
+  button.update {
+    color: var(--figma-color-text-brand);
+    background-color: var(--figma-color-bg-brand-tertiary);
+    border-radius: 0.5rem;
   }
 
   /* Map */
@@ -227,8 +303,8 @@
   }
   /* Map nodes */
   .node-thumbnail {
-    max-width: 120px;
-    max-height: 120px;
+    min-width: 180px;
+    min-height: 180px;
     background-color: var(--figma-color-bg-tertiary);
     border: 2px solid var(--figma-color-border);
   }
@@ -239,14 +315,5 @@
   }
   .measure {
     width: 48px;
-  }
-
-  /* Actions */
-  .actions {
-    position: sticky;
-    bottom: 32px;
-    display: flex;
-    justify-content: end;
-    padding: 0 24px;
   }
 </style>
