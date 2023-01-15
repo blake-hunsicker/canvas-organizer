@@ -29,7 +29,20 @@
 
 <script src="https://unpkg.com/phosphor-icons"></script>
 <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
+<script src='https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js'></script>
 <script>
+
+  // Pass map container to panzoom.js
+
+  const mapContainer = document.querySelector('.map-container')
+  const spaceEvent = new KeyboardEvent('keydown',{'keyCode':32,'which':32})
+  panzoom(mapContainer, {
+    beforeMouseDown: function(e) {
+      // allow mouse-down panning only if altKey is down. Otherwise - ignore
+      var shouldIgnore = !e.altKey;
+      return shouldIgnore;
+    }
+  })
 
   // Receive info from the plugin
   onmessage = (event) => {
